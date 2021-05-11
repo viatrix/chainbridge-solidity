@@ -10,3 +10,7 @@ src/ethers
 src/web3
 ganache-cli/
 dist/
+artifacts/
+cache/
+artifacts-ovm/
+cache-ovm/
