@@ -9,6 +9,14 @@ test:
 	@echo " > \033[32mTesting contracts... \033[0m "
 	npx truffle test
 
+start-hardhat:
+	@echo " > \033[32m Starting hardhat... \033[0m "
+	npx hardhat node
+
+test-hardhat:
+	@echo " > \033[32m Starting hardhat... \033[0m "
+	npx npx hardhat test --network localhost
+
 test-ovm:
 	@echo " > \033[32mTesting contracts against OVM... \033[0m "
 	npm run test:ovm

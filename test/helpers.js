@@ -39,10 +39,10 @@ const createERC721DepositProposalData = (
         toHex(metaData, lenMetaData).substr(2)     // metaData                      (?? bytes)
 };
 
-const advanceBlock = () => {
+const advanceBlock = async () => {
     let provider = new Ethers.providers.JsonRpcProvider();
     const time = Math.floor(Date.now() / 1000);
-    return provider.send("evm_mine", [time]);
+    await provider.send("evm_mine", []);
 }
 
 const createGenericDepositData = (hexMetaData) => {
