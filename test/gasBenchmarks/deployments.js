@@ -27,16 +27,13 @@ contract('Gas Benchmark - [contract deployments]', async () => {
 
     it('Should deploy all contracts and print benchmarks', async () => {
         let contractInstances = [await BridgeContract.new(chainID, [], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance)];
-        contractInstances = contractInstances.concat(
-            await Promise.all([
-                ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses),
-                ERC721HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses),
-                GenericHandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, initialDepositFunctionSignatures, initialDepositFunctionDepositerOffsets, initialExecuteFunctionSignatures),
-                CentrifugeAssetContract.new(centrifugeAssetMinCount),
-                HandlerHelpersContract.new(),
-                ERC20SafeContract.new(),
-                ERC721SafeContract.new()
-        ]));
+        contractInstances.push(await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses));
+        contractInstances.push(await ERC721HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses));
+        contractInstances.push(await GenericHandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, initialDepositFunctionSignatures, initialDepositFunctionDepositerOffsets, initialExecuteFunctionSignatures));
+        contractInstances.push(await CentrifugeAssetContract.new(centrifugeAssetMinCount));
+        contractInstances.push(await HandlerHelpersContract.new());
+        contractInstances.push(await ERC20SafeContract.new());
+        contractInstances.push(await ERC721SafeContract.new());
 
         for (const contractInstance of contractInstances) {
             const txReceipt = await web3.eth.getTransactionReceipt(contractInstance.transactionHash);

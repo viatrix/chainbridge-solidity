@@ -28,25 +28,18 @@ contract('ERC20Handler - [Deposit ERC20]', async (accounts) => {
     let burnableContractAddresses;
 
     beforeEach(async () => {
-        await Promise.all([
-            BridgeContract.new(chainID, [], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => ERC20MintableInstance = instance)
-        ]);
+        BridgeInstance = await BridgeContract.new(chainID, [], relayerThreshold, 0, 100);
+        ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
         
         resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
         initialResourceIDs = [resourceID];
         initialContractAddresses = [ERC20MintableInstance.address];
-        burnableContractAddresses = []
+        burnableContractAddresses = [];
 
-        await Promise.all([
-            ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses).then(instance => ERC20HandlerInstance = instance),
-            ERC20MintableInstance.mint(depositerAddress, tokenAmount)
-        ]);
-
-        await Promise.all([
-            ERC20MintableInstance.approve(ERC20HandlerInstance.address, tokenAmount, { from: depositerAddress }),
-            BridgeInstance.adminSetResource(ERC20HandlerInstance.address, resourceID, ERC20MintableInstance.address)
-        ]);
+        ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        await ERC20MintableInstance.mint(depositerAddress, tokenAmount);
+        await ERC20MintableInstance.approve(ERC20HandlerInstance.address, tokenAmount, { from: depositerAddress });
+        await BridgeInstance.adminSetResource(ERC20HandlerInstance.address, resourceID, ERC20MintableInstance.address);
     });
 
     it('[sanity] depositer owns tokenAmount of ERC20', async () => {

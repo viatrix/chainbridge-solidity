@@ -33,10 +33,8 @@ contract('E2E ERC20 - Same Chain', async accounts => {
     let burnableContractAddresses;
 
     beforeEach(async () => {
-        await Promise.all([
-            BridgeContract.new(chainID, [relayer1Address, relayer2Address], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => ERC20MintableInstance = instance)
-        ]);
+        BridgeInstance = await BridgeContract.new(chainID, [relayer1Address, relayer2Address], relayerThreshold, 0, 100);
+        ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
         
         resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
     
@@ -46,10 +44,8 @@ contract('E2E ERC20 - Same Chain', async accounts => {
 
         ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
 
-        await Promise.all([
-            ERC20MintableInstance.mint(depositerAddress, initialTokenAmount),
-            BridgeInstance.adminSetResource(ERC20HandlerInstance.address, resourceID, ERC20MintableInstance.address)
-        ]);
+        await ERC20MintableInstance.mint(depositerAddress, initialTokenAmount);
+        await BridgeInstance.adminSetResource(ERC20HandlerInstance.address, resourceID, ERC20MintableInstance.address);
         
         await ERC20MintableInstance.approve(ERC20HandlerInstance.address, depositAmount, { from: depositerAddress });
 

@@ -38,10 +38,8 @@ contract('GenericHandler - [Execute Proposal]', async (accounts) => {
     let depositData;
 
     beforeEach(async () => {
-        await Promise.all([
-            BridgeContract.new(chainID, initialRelayers, relayerThreshold, 0, 100).then(instance => BridgeInstance = instance),
-            CentrifugeAssetContract.new(centrifugeAssetMinCount).then(instance => CentrifugeAssetInstance = instance)
-        ]);
+        BridgeInstance = await BridgeContract.new(chainID, initialRelayers, relayerThreshold, 0, 100);
+        CentrifugeAssetInstance = await CentrifugeAssetContract.new(centrifugeAssetMinCount);
 
         const centrifugeAssetFuncSig = Helpers.getFunctionSignature(CentrifugeAssetInstance, 'store');
 

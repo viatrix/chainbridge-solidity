@@ -4,6 +4,7 @@
  */
 
  const Ethers = require('ethers');
+const { web3 } = require('hardhat');
 
  const blankFunctionSig = '0x00000000';
  const blankFunctionDepositerOffset = 0;
@@ -41,7 +42,6 @@ const createERC721DepositProposalData = (
 
 const advanceBlock = async () => {
     let provider = new Ethers.providers.JsonRpcProvider();
-    const time = Math.floor(Date.now() / 1000);
     await provider.send("evm_mine", []);
 }
 
@@ -97,6 +97,13 @@ const nonceAndId = (nonce, id) => {
     return Ethers.utils.hexZeroPad(Ethers.utils.hexlify(nonce), 8) + Ethers.utils.hexZeroPad(Ethers.utils.hexlify(id), 1).substr(2)
 }
 
+const isOVM = async () => {
+    let provider = new Ethers.providers.JsonRpcProvider();
+    const chainId = await provider.send("eth_chainId", []);
+    // optimism testnet chain ID
+    return chainId === '0x1a4';
+}
+
 module.exports = {
     advanceBlock,
     blankFunctionSig,
@@ -109,5 +116,6 @@ module.exports = {
     createERC721DepositProposalData,
     createResourceID,
     assertObjectsMatch,
-    nonceAndId
+    nonceAndId,
+    isOVM
 };

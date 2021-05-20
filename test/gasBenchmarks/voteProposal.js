@@ -33,10 +33,8 @@ contract('Gas Benchmark - [Vote Proposal]', async (accounts) => {
     const vote = (resourceID, depositNonce, depositDataHash, relayer) => BridgeInstance.voteProposal(chainID, depositNonce, resourceID, depositDataHash, { from: relayer });
 
     before(async () => {
-        await Promise.all([
-            BridgeContract.new(chainID, initialRelayers, relayerThreshold, 0, 100).then(instance => BridgeInstance = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => ERC20MintableInstance = instance),
-        ]);
+        BridgeInstance = await BridgeContract.new(chainID, initialRelayers, relayerThreshold, 0, 100);
+        ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
 
         erc20ResourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
 
@@ -44,12 +42,10 @@ contract('Gas Benchmark - [Vote Proposal]', async (accounts) => {
         const erc20InitialContractAddresses = [ERC20MintableInstance.address];
         const erc20BurnableContractAddresses = [];
 
-        await ERC20HandlerContract.new(BridgeInstance.address, erc20InitialResourceIDs, erc20InitialContractAddresses, erc20BurnableContractAddresses).then(instance => ERC20HandlerInstance = instance);
+        ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, erc20InitialResourceIDs, erc20InitialContractAddresses, erc20BurnableContractAddresses);
 
-        await Promise.all([
-            ERC20MintableInstance.approve(ERC20HandlerInstance.address, erc20TokenAmount, { from: depositerAddress }),
-            BridgeInstance.adminSetResource(ERC20HandlerInstance.address, erc20ResourceID, ERC20MintableInstance.address),
-        ]);
+        await (ERC20HandlerInstance.address, erc20TokenAmount, { from: depositerAddress });
+        await BridgeInstance.adminSetResource(ERC20HandlerInstance.address, erc20ResourceID, ERC20MintableInstance.address);
     });
 
     it('Should create proposal - relayerThreshold = 2, not finalized', async () => {

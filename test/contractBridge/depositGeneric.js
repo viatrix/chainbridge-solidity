@@ -26,10 +26,8 @@ contract('Bridge - [deposit - Generic]', async () => {
     let initialExecuteFunctionSignatures;
 
     beforeEach(async () => {
-        await Promise.all([
-            CentrifugeAssetContract.new().then(instance => CentrifugeAssetInstance = instance),
-            BridgeInstance = BridgeContract.new(originChainID, [], 0, 0, 100).then(instance => BridgeInstance = instance)
-        ]);
+        CentrifugeAssetInstance = await CentrifugeAssetContract.new();
+        BridgeInstance = await BridgeContract.new(originChainID, [], 0, 0, 100);
         
         resourceID = Helpers.createResourceID(CentrifugeAssetInstance.address, originChainID)
         initialResourceIDs = [resourceID];

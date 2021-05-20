@@ -26,11 +26,9 @@ contract('ERC721Handler - [Burn ERC721]', async () => {
     let burnableContractAddresses;
 
     beforeEach(async () => {
-        await Promise.all([
-            BridgeContract.new(chainID, [], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance),
-            ERC721MintableContract.new("token", "TOK", "").then(instance => ERC721MintableInstance1 = instance),
-            ERC721MintableContract.new("token", "TOK", "").then(instance => ERC721MintableInstance2 = instance)
-        ])
+        BridgeInstance = await BridgeContract.new(chainID, [], relayerThreshold, 0, 100);
+        ERC721MintableInstance1 = await ERC721MintableContract.new("token", "TOK", "");
+        ERC721MintableInstance2 = await ERC721MintableContract.new("token", "TOK", "");
 
         resourceID1 = Helpers.createResourceID(ERC721MintableInstance1.address, chainID);
         resourceID2 = Helpers.createResourceID(ERC721MintableInstance2.address, chainID);

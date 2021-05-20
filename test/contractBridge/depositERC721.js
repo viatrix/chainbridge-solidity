@@ -35,10 +35,8 @@ contract('Bridge - [deposit - ERC721]', async (accounts) => {
     let destinationBurnableContractAddresses;
 
     beforeEach(async () => {
-        await Promise.all([
-            ERC721MintableContract.new("token", "TOK", "").then(instance => OriginERC721MintableInstance = instance),
-            BridgeContract.new(originChainID, [], 0, 0, 100).then(instance => BridgeInstance = instance)
-        ]);
+        OriginERC721MintableInstance = await ERC721MintableContract.new("token", "TOK", "");
+        BridgeInstance = await BridgeContract.new(originChainID, [], 0, 0, 100);
         
         originResourceID = Helpers.createResourceID(OriginERC721MintableInstance.address, originChainID);
         originInitialResourceIDs = [];
@@ -49,16 +47,11 @@ contract('Bridge - [deposit - ERC721]', async (accounts) => {
         destinationInitialContractAddresses = [];
         destinationBurnableContractAddresses = [];
 
-        await Promise.all([
-            ERC721HandlerContract.new(BridgeInstance.address, originInitialResourceIDs, originInitialContractAddresses, originBurnableContractAddresses).then(instance => OriginERC721HandlerInstance = instance),
-            ERC721HandlerContract.new(BridgeInstance.address, destinationInitialResourceIDs, destinationInitialContractAddresses, destinationBurnableContractAddresses).then(instance => DestinationERC721HandlerInstance = instance)
-        ]);
+        OriginERC721HandlerInstance = await ERC721HandlerContract.new(BridgeInstance.address, originInitialResourceIDs, originInitialContractAddresses, originBurnableContractAddresses);
+        DestinationERC721HandlerInstance = await ERC721HandlerContract.new(BridgeInstance.address, destinationInitialResourceIDs, destinationInitialContractAddresses, destinationBurnableContractAddresses);
 
-        await Promise.all([
-            BridgeInstance.adminSetResource(OriginERC721HandlerInstance.address, originResourceID, OriginERC721MintableInstance.address),
-            OriginERC721MintableInstance.mint(depositerAddress, originChainTokenID, genericBytes)
-        ]);
-        
+        await BridgeInstance.adminSetResource(OriginERC721HandlerInstance.address, originResourceID, OriginERC721MintableInstance.address);
+        await OriginERC721MintableInstance.mint(depositerAddress, originChainTokenID, genericBytes);
         await OriginERC721MintableInstance.approve(OriginERC721HandlerInstance.address, originChainTokenID, { from: depositerAddress });
 
         depositData = Helpers.createERCDepositData(

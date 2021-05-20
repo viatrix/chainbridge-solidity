@@ -24,11 +24,9 @@ contract('ERC20Handler - [isWhitelisted]', async () => {
     let burnableContractAddresses;
 
     beforeEach(async () => {
-        await Promise.all([
-            BridgeContract.new(chainID, [], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => ERC20MintableInstance1 = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => ERC20MintableInstance2 = instance)
-        ])
+        BridgeInstance = await BridgeContract.new(chainID, [], relayerThreshold, 0, 100);
+        ERC20MintableInstance1 = await ERC20MintableContract.new("token", "TOK");
+        ERC20MintableInstance2 = await ERC20MintableContract.new("token", "TOK");
 
         initialResourceIDs = [];
         resourceID1 = Ethers.utils.hexZeroPad((ERC20MintableInstance1.address + Ethers.utils.hexlify(chainID).substr(2)), 32);

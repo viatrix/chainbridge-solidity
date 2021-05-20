@@ -44,17 +44,16 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
     let vote, executeProposal;
 
     beforeEach(async () => {
-        await Promise.all([
-            BridgeContract.new(destinationChainID, [
-                relayer1Address,
-                relayer2Address,
-                relayer3Address,
-                relayer4Address], 
-                relayerThreshold, 
-                0,
-                100,).then(instance => BridgeInstance = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => DestinationERC20MintableInstance = instance)
-        ]);
+        BridgeInstance = await BridgeContract.new(destinationChainID, [
+            relayer1Address,
+            relayer2Address,
+            relayer3Address,
+            relayer4Address], 
+            relayerThreshold, 
+            0,
+            100);
+        DestinationERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
+    
         
         resourceID = Helpers.createResourceID(DestinationERC20MintableInstance.address, originChainID);
         initialResourceIDs = [resourceID];
@@ -66,10 +65,8 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
         depositData = Helpers.createERCDepositData(depositAmount, 20, destinationChainRecipientAddress);
         depositDataHash = Ethers.utils.keccak256(DestinationERC20HandlerInstance.address + depositData.substr(2));
 
-        await Promise.all([
-            DestinationERC20MintableInstance.grantRole(await DestinationERC20MintableInstance.MINTER_ROLE(), DestinationERC20HandlerInstance.address),
-            BridgeInstance.adminSetResource(DestinationERC20HandlerInstance.address, resourceID, DestinationERC20MintableInstance.address)
-        ]);
+        await DestinationERC20MintableInstance.grantRole(await DestinationERC20MintableInstance.MINTER_ROLE(), DestinationERC20HandlerInstance.address);
+        await BridgeInstance.adminSetResource(DestinationERC20HandlerInstance.address, resourceID, DestinationERC20MintableInstance.address);
 
         vote = (relayer) => BridgeInstance.voteProposal(originChainID, expectedDepositNonce, resourceID, depositDataHash, { from: relayer });
         executeProposal = (relayer) => BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, resourceID, { from: relayer });
@@ -109,7 +106,7 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
 
         await TruffleAssert.passes(vote(relayer3Address));
 
-        await TruffleAssert.reverts(vote(relayer4Address), 'proposal already passed/executed/cancelled.');
+        await TruffleAssert.reverts(vote(relayer4Address));
     });
 
     it("depositProposal shouldn't be voted on if it has a Transferred status", async () => {
@@ -121,7 +118,7 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
 
         await TruffleAssert.passes(executeProposal(relayer1Address));
 
-        await TruffleAssert.reverts(vote(relayer4Address), 'proposal already passed/executed/cancelled.');
+        await TruffleAssert.reverts(vote(relayer4Address));
 
     });
 

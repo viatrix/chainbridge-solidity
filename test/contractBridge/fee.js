@@ -30,10 +30,8 @@ contract('Bridge - [fee]', async (accounts) => {
     let initialExecuteFunctionSignatures;
 
     beforeEach(async () => {
-        await Promise.all([
-            CentrifugeAssetContract.new().then(instance => CentrifugeAssetInstance = instance),
-            BridgeInstance = BridgeContract.new(originChainID, [relayer], 0, 0, 100).then(instance => BridgeInstance = instance)
-        ]);
+        CentrifugeAssetInstance = await CentrifugeAssetContract.new();
+        BridgeInstance = await BridgeContract.new(originChainID, [relayer], 0, 0, 100);
 
         resourceID = Helpers.createResourceID(CentrifugeAssetInstance.address, originChainID)
         initialResourceIDs = [resourceID];
@@ -67,7 +65,7 @@ contract('Bridge - [fee]', async (accounts) => {
         // current fee is set to 0
         assert.equal(await BridgeInstance._fee.call(), 0)
         
-        await TruffleAssert.reverts(
+        await TruffleAssert.fails(
             BridgeInstance.deposit(
                 destinationChainID,
                 resourceID,
@@ -80,6 +78,11 @@ contract('Bridge - [fee]', async (accounts) => {
     });
 
     it('deposit passes if valid amount supplied', async () => {
+        if (await Helpers.isOVM()) {
+            console.log('Test skipped on Optimism testnet');
+            return;
+        }
+
         // current fee is set to 0
         assert.equal(await BridgeInstance._fee.call(), 0)
         // Change fee to 0.5 ether
@@ -99,6 +102,11 @@ contract('Bridge - [fee]', async (accounts) => {
     });
 
     it('distribute fees', async () => {
+        if (await Helpers.isOVM()) {
+            console.log('Test skipped on Optimism testnet');
+            return;
+        }
+        
         await BridgeInstance.adminChangeFee(Ethers.utils.parseEther("1"), { from: relayer });
         assert.equal(web3.utils.fromWei((await BridgeInstance._fee.call()), "ether"), "1");
 

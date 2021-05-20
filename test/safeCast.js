@@ -16,6 +16,6 @@ contract('Utils - [SafeCast]', async accounts => {
     });
 
     it('toUint200 should revert if passed value greater than 2**200 - 1', async () => {
-        return TruffleAssert.reverts(SafeCasterInstance.toUint200(BN(2).pow(BN(200))), "value does not fit in 200 bits");
+        return TruffleAssert.fails(SafeCasterInstance.toUint200.estimateGas(BN(2).pow(BN(200))));
     });
 });

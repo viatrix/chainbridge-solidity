@@ -47,12 +47,10 @@ contract('E2E ERC20 - Two EVM Chains', async accounts => {
     let destinationBurnableContractAddresses;
 
     beforeEach(async () => {
-        await Promise.all([
-            BridgeContract.new(originChainID, [originRelayer1Address, originRelayer2Address], originRelayerThreshold, 0, 100).then(instance => OriginBridgeInstance = instance),
-            BridgeContract.new(destinationChainID, [destinationRelayer1Address, destinationRelayer2Address], destinationRelayerThreshold, 0, 100).then(instance => DestinationBridgeInstance = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => OriginERC20MintableInstance = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => DestinationERC20MintableInstance = instance)
-        ]);
+        OriginBridgeInstance = await BridgeContract.new(originChainID, [originRelayer1Address, originRelayer2Address], originRelayerThreshold, 0, 100);
+        DestinationBridgeInstance = await BridgeContract.new(destinationChainID, [destinationRelayer1Address, destinationRelayer2Address], destinationRelayerThreshold, 0, 100);
+        OriginERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
+        DestinationERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
 
         originResourceID = Helpers.createResourceID(OriginERC20MintableInstance.address, originChainID);
         originInitialResourceIDs = [originResourceID];
@@ -64,22 +62,17 @@ contract('E2E ERC20 - Two EVM Chains', async accounts => {
         destinationInitialContractAddresses = [DestinationERC20MintableInstance.address];
         destinationBurnableContractAddresses = [DestinationERC20MintableInstance.address];
 
-        await Promise.all([
-            ERC20HandlerContract.new(OriginBridgeInstance.address, originInitialResourceIDs, originInitialContractAddresses, originBurnableContractAddresses)
-                .then(instance => OriginERC20HandlerInstance = instance),
-            ERC20HandlerContract.new(DestinationBridgeInstance.address, destinationInitialResourceIDs, destinationInitialContractAddresses, destinationBurnableContractAddresses)
-                .then(instance => DestinationERC20HandlerInstance = instance),
-        ]);
+        OriginERC20HandlerInstance = await ERC20HandlerContract.new(OriginBridgeInstance.address, originInitialResourceIDs, originInitialContractAddresses, originBurnableContractAddresses);
+        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(DestinationBridgeInstance.address, destinationInitialResourceIDs, destinationInitialContractAddresses, destinationBurnableContractAddresses);
 
         await OriginERC20MintableInstance.mint(depositerAddress, initialTokenAmount);
 
-        await Promise.all([
-            OriginERC20MintableInstance.approve(OriginERC20HandlerInstance.address, depositAmount, { from: depositerAddress }),
-            OriginERC20MintableInstance.grantRole(await OriginERC20MintableInstance.MINTER_ROLE(), OriginERC20HandlerInstance.address),
-            DestinationERC20MintableInstance.grantRole(await DestinationERC20MintableInstance.MINTER_ROLE(), DestinationERC20HandlerInstance.address),
-            OriginBridgeInstance.adminSetResource(OriginERC20HandlerInstance.address, originResourceID, OriginERC20MintableInstance.address),
-            DestinationBridgeInstance.adminSetResource(DestinationERC20HandlerInstance.address, destinationResourceID, DestinationERC20MintableInstance.address)
-        ]);
+        await OriginERC20MintableInstance.approve(OriginERC20HandlerInstance.address, depositAmount, { from: depositerAddress });
+        await OriginERC20MintableInstance.grantRole(await OriginERC20MintableInstance.MINTER_ROLE(), OriginERC20HandlerInstance.address);
+        await DestinationERC20MintableInstance.grantRole(await DestinationERC20MintableInstance.MINTER_ROLE(), DestinationERC20HandlerInstance.address);
+        await OriginBridgeInstance.adminSetResource(OriginERC20HandlerInstance.address, originResourceID, OriginERC20MintableInstance.address);
+        await DestinationBridgeInstance.adminSetResource(DestinationERC20HandlerInstance.address, destinationResourceID, DestinationERC20MintableInstance.address);
+        
 
         originDepositData = Helpers.createERCDepositData(depositAmount, 20, recipientAddress);
         originDepositProposalData = Helpers.createERCDepositData(depositAmount, 20, recipientAddress);

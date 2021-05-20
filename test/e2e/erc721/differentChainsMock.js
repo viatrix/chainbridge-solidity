@@ -42,12 +42,10 @@ contract('E2E ERC721 - Two EVM Chains', async accounts => {
     let destinationBurnableContractAddresses;
 
     beforeEach(async () => {
-        await Promise.all([
-            BridgeContract.new(originChainID, [originRelayer1Address, originRelayer2Address], originRelayerThreshold, 0, 100).then(instance => OriginBridgeInstance = instance),
-            BridgeContract.new(destinationChainID, [destinationRelayer1Address, destinationRelayer2Address], destinationRelayerThreshold, 0, 100).then(instance => DestinationBridgeInstance = instance),
-            ERC721MintableContract.new("token", "TOK", "").then(instance => OriginERC721MintableInstance = instance),
-            ERC721MintableContract.new("token", "TOK", "").then(instance => DestinationERC721MintableInstance = instance)
-        ]);
+        OriginBridgeInstance = await BridgeContract.new(originChainID, [originRelayer1Address, originRelayer2Address], originRelayerThreshold, 0, 100);
+        DestinationBridgeInstance = await BridgeContract.new(destinationChainID, [destinationRelayer1Address, destinationRelayer2Address], destinationRelayerThreshold, 0, 100);
+        OriginERC721MintableInstance = await ERC721MintableContract.new("token", "TOK", "");
+        DestinationERC721MintableInstance = await ERC721MintableContract.new("token", "TOK", "");
         
         originResourceID = Helpers.createResourceID(OriginERC721MintableInstance.address, originChainID);
         originInitialResourceIDs = [originResourceID];
@@ -59,21 +57,15 @@ contract('E2E ERC721 - Two EVM Chains', async accounts => {
         destinationInitialContractAddresses = [DestinationERC721MintableInstance.address];
         destinationBurnableContractAddresses = [DestinationERC721MintableInstance.address];
 
-        await Promise.all([
-            ERC721HandlerContract.new(OriginBridgeInstance.address, originInitialResourceIDs, originInitialContractAddresses, originBurnableContractAddresses)
-                .then(instance => OriginERC721HandlerInstance = instance),
-            ERC721HandlerContract.new(DestinationBridgeInstance.address, destinationInitialResourceIDs, destinationInitialContractAddresses, destinationBurnableContractAddresses)
-                .then(instance => DestinationERC721HandlerInstance = instance)
-        ]);
+        OriginERC721HandlerInstance = await ERC721HandlerContract.new(OriginBridgeInstance.address, originInitialResourceIDs, originInitialContractAddresses, originBurnableContractAddresses);
+        DestinationERC721HandlerInstance = await ERC721HandlerContract.new(DestinationBridgeInstance.address, destinationInitialResourceIDs, destinationInitialContractAddresses, destinationBurnableContractAddresses);
 
         await OriginERC721MintableInstance.mint(depositerAddress, tokenID, "");
 
-        await Promise.all([
-            OriginERC721MintableInstance.approve(OriginERC721HandlerInstance.address, tokenID, { from: depositerAddress }),
-            DestinationERC721MintableInstance.grantRole(await DestinationERC721MintableInstance.MINTER_ROLE(), DestinationERC721HandlerInstance.address),
-            OriginBridgeInstance.adminSetResource(OriginERC721HandlerInstance.address, originResourceID, OriginERC721MintableInstance.address),
-            DestinationBridgeInstance.adminSetResource(DestinationERC721HandlerInstance.address, destinationResourceID, DestinationERC721MintableInstance.address)
-        ]);
+        await OriginERC721MintableInstance.approve(OriginERC721HandlerInstance.address, tokenID, { from: depositerAddress });
+        await DestinationERC721MintableInstance.grantRole(await DestinationERC721MintableInstance.MINTER_ROLE(), DestinationERC721HandlerInstance.address);
+        await OriginBridgeInstance.adminSetResource(OriginERC721HandlerInstance.address, originResourceID, OriginERC721MintableInstance.address);
+        await DestinationBridgeInstance.adminSetResource(DestinationERC721HandlerInstance.address, destinationResourceID, DestinationERC721MintableInstance.address);
 
         originDepositData = Helpers.createERCDepositData(tokenID, 20, recipientAddress);
         originDepositProposalData = Helpers.createERC721DepositProposalData(tokenID, 20, recipientAddress, 32, 0);
@@ -166,7 +158,7 @@ contract('E2E ERC721 - Two EVM Chains', async accounts => {
         ));
 
         // Token should no longer exist
-        TruffleAssert.reverts(DestinationERC721MintableInstance.ownerOf(tokenID), "ERC721: owner query for nonexistent token")
+        TruffleAssert.fails(DestinationERC721MintableInstance.ownerOf(tokenID));
 
         // destinationRelayer1 creates the deposit proposal
         TruffleAssert.passes(await OriginBridgeInstance.voteProposal(
@@ -198,7 +190,7 @@ contract('E2E ERC721 - Two EVM Chains', async accounts => {
         ));
 
         // Assert Destination tokenID no longer exists
-        TruffleAssert.reverts(DestinationERC721MintableInstance.ownerOf(tokenID), "ERC721: owner query for nonexistent token")
+        TruffleAssert.fails(DestinationERC721MintableInstance.ownerOf(tokenID));
 
         // Assert DestinationERC721MintableInstance tokenID was transferred to recipientAddress
         tokenOwner = await OriginERC721MintableInstance.ownerOf(tokenID);
