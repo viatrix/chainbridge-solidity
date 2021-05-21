@@ -28,7 +28,7 @@ contract('Bridge - [admin]', async accounts => {
     let BridgeInstance;
 
     const assertOnlyAdmin = (method, ...params) => {
-        return TruffleAssert.reverts(method(...params, {from: initialRelayers[1]}), "sender doesn't have admin role");
+        return TruffleAssert.reverts(method(...params, {from: initialRelayers[1]}));
     };
 
     beforeEach(async () => {
@@ -177,7 +177,7 @@ contract('Bridge - [admin]', async accounts => {
     });
 
     it('Should not set the same fee', async () => {
-        await TruffleAssert.reverts(BridgeInstance.adminChangeFee(0), "Current fee is equal to new fee");
+        await TruffleAssert.reverts(BridgeInstance.adminChangeFee(0));
     });
 
     it('Should require admin role to set fee', async () => {
