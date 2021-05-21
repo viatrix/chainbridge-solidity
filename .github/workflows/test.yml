@@ -27,7 +27,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: make install-deps
-      - name: Hardhat Tests
+      - name: Hardhat tests
         run: |
           make start-hardhat 1>/dev/null 2>/dev/null &
           make test-hardhat
