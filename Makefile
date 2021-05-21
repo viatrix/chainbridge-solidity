@@ -15,15 +15,19 @@ start-hardhat:
 
 test-hardhat:
 	@echo " > \033[32m Starting hardhat... \033[0m "
-	npx npx hardhat test --network localhost
+	npx hardhat test --network localhost
 
 test-ovm:
 	@echo " > \033[32mTesting contracts against OVM... \033[0m "
-	npm run test:ovm
+	npx hardhat test --network optimism
 
 compile:
 	@echo " > \033[32mCompiling contracts... \033[0m "
 	npx truffle compile
+
+compile-ovm:
+	@echo " > \033[32mCompiling contracts for OVM... \033[0m "
+	npx hardhat compile --network optimism
 
 start-ganache:
 	@echo " > \033[32mStarting ganache... \033[0m "

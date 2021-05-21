@@ -28,16 +28,20 @@ Requires `nodejs` and `npm`.
 
 `make compile`: Compile contracts.
 
+`make start-hardhat`: Start a hardhat node in a separate terminal for testing.
+
+`make test-hardhat`: Test using hardhat (after starting a hardhat node in a separate terminal).
+
 ## Testing with Optimism
 
 These contracts aim to be compatible with Optimistic Ethereum Virtual Machine (OVM)
 This may require making some small modifications to some of the @openzeppelin dependencies until full support is added.
 
-`npm run compile:ovm`: Build contracts using modified OVM Solidity compiler
+`make compile-ovm`: Build contracts using modified OVM Solidity compiler
 
-To test against a local Optimism rollup follow the instructions [here](https://github.com/ethereum-optimism/optimism-integration) to start a local geth L1 and optimistic geth L2.
+To test against a local Optimism rollup follow the instructions [here](https://github.com/ethereum-optimism/optimism) to start a local geth L1 and optimistic geth L2.
 
-`npm run test:ovm` 
+`make test-ovm` 
 
 # ChainSafe Security Policy
 
