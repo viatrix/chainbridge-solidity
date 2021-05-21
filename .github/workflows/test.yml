@@ -58,10 +58,13 @@ jobs:
           cd optimism/ops
           docker-compose build
           docker-compose up -d
+          date
       - name: Run OVM tests
         run: |
           npm install wait-on
-          npx wait-on http://localhost:8545
+          date
+          npx wait-on http://localhost:8545 -t 500000 || true
+          date
           make test-ovm
 
   coverage:
