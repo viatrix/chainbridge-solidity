@@ -56,8 +56,8 @@ jobs:
       - name: Install optimism
         run: |
           cd optimism/ops
-          docker compose build
-          docker compose up
+          docker-compose build
+          docker-compose up
 
   coverage:
     name: Coverage
