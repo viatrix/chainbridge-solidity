@@ -1,6 +1,3 @@
-// require('@nomiclabs/hardhat-ethers')
-// require('@nomiclabs/hardhat-waffle')
-// require('hardhat-deploy')
 require("@eth-optimism/hardhat-ovm");
 require("@nomiclabs/hardhat-truffle5");
 

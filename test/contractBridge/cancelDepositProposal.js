@@ -118,7 +118,7 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
 
         const depositProposal = await BridgeInstance.getProposal(originChainID, expectedDepositNonce, depositDataHash);
         assert.deepInclude(Object.assign({}, depositProposal), expectedDepositProposal);
-        await TruffleAssert.reverts(vote(relayer3Address), "Error: VM Exception while processing transaction: revert proposal already passed/executed/cancelled")
+        await TruffleAssert.reverts(vote(relayer3Address))
     });
 
 
@@ -143,7 +143,7 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
         await TruffleAssert.passes(BridgeInstance.cancelProposal(originChainID, expectedDepositNonce, depositDataHash))
         const depositProposal = await BridgeInstance.getProposal(originChainID, expectedDepositNonce, depositDataHash);
         assert.deepInclude(Object.assign({}, depositProposal), expectedDepositProposal);
-        await TruffleAssert.reverts(vote(relayer4Address), "Error: VM Exception while processing transaction: revert proposal already passed/executed/cancelled")
+        await TruffleAssert.reverts(vote(relayer4Address))
     });
 
     it("relayer cannot cancel proposal before threshold blocks have passed", async () => {
@@ -173,7 +173,7 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
         await TruffleAssert.passes(BridgeInstance.cancelProposal(originChainID, expectedDepositNonce, depositDataHash))
         const depositProposal = await BridgeInstance.getProposal(originChainID, expectedDepositNonce, depositDataHash);
         assert.deepInclude(Object.assign({}, depositProposal), expectedDepositProposal);
-        await TruffleAssert.reverts(vote(relayer2Address), "Error: VM Exception while processing transaction: revert proposal already passed/executed/cancelled")
+        await TruffleAssert.reverts(vote(relayer2Address))
     });
 
     it("proposal cannot be cancelled twice", async () => {
@@ -189,7 +189,7 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
         }
 
         await TruffleAssert.passes(BridgeInstance.cancelProposal(originChainID, expectedDepositNonce, depositDataHash))
-        await TruffleAssert.reverts(BridgeInstance.cancelProposal(originChainID, expectedDepositNonce, depositDataHash), "Error: VM Exception while processing transaction: revert Proposal cannot be cancelled")
+        await TruffleAssert.reverts(BridgeInstance.cancelProposal(originChainID, expectedDepositNonce, depositDataHash))
     });
 
     it("inactive proposal cannot be cancelled", async () => {

@@ -27,9 +27,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: make install-deps
-      - name: Ganache Tests
+      - name: Hardhat Tests
         run: |
-          SILENT=true make start-hardhat
+          make start-hardhat 1>/dev/null 2>/dev/null &
           make test-hardhat
 
   test-ovm:
@@ -58,7 +58,7 @@ jobs:
           cd optimism/ops
           docker-compose build
           docker-compose up -d
-      - name: Run OVM
+      - name: Run OVM tests
         run: |
           npm install wait-on
           npx wait-on http://localhost:8545
