@@ -29,8 +29,8 @@ jobs:
         run: make install-deps
       - name: Ganache Tests
         run: |
-          SILENT=true make start-ganache
-          make test
+          SILENT=true make start-hardhat
+          make test-hardhat
 
   test-ovm:
     name: Test OVM
@@ -57,8 +57,9 @@ jobs:
         run: |
           cd optimism/ops
           docker-compose build
+          docker-compose create
           docker-compose start
-      - name: Run OVM tests
+      - name: Run OVM
         run: |
           npm install wait-on
           npx wait-on http://localhost:8545
