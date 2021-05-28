@@ -24,6 +24,10 @@ contract Bridge is Pausable, AccessControl, SafeMath {
     uint128 public _fee;
     uint40  public _expiry;
 
+    address immutable public owner;
+
+    bool internal initialized;
+
     enum ProposalStatus {Inactive, Active, Passed, Executed, Cancelled}
 
     struct Proposal {
@@ -78,6 +82,11 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         _;
     }
 
+    modifier onlyInitialized() {
+        _onlyInitialized();
+        _;
+    }
+
     function _onlyAdminOrRelayer() private view {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(RELAYER_ROLE, msg.sender),
             "sender is not relayer or admin");
@@ -99,6 +108,15 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         return (_relayerBit(relayer) & uint(proposal._yesVotes)) > 0;
     }
 
+    function _onlyInitialized() private view {
+        require(initialized, "not initialized");
+    }
+
+    constructor () public {
+        owner = msg.sender;
+    }
+
+
     /**
         @notice Initializes Bridge, creates and grants {msg.sender} the admin role,
         creates and grants {initialRelayers} the relayer role.
@@ -106,7 +124,10 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         @param initialRelayers Addresses that should be initially granted the relayer role.
         @param initialRelayerThreshold Number of votes needed for a deposit proposal to be considered passed.
      */
-    constructor (uint8 chainID, address[] memory initialRelayers, uint256 initialRelayerThreshold, uint256 fee, uint256 expiry) public {
+
+    function init(uint8 chainID, address[] memory initialRelayers, uint256 initialRelayerThreshold, uint256 fee, uint256 expiry) public {
+        require(msg.sender == owner, "Not owner");
+        require(!initialized, "Already initialized");
         _chainID = chainID;
         _relayerThreshold = initialRelayerThreshold.toUint8();
         _fee = fee.toUint128();
@@ -117,6 +138,7 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         for (uint256 i; i < initialRelayers.length; i++) {
             grantRole(RELAYER_ROLE, initialRelayers[i]);
         }
+        initialized = true;
     }
 
     /**
@@ -308,7 +330,7 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         @param data Additional data to be passed to specified handler.
         @notice Emits {Deposit} event.
      */
-    function deposit(uint8 destinationChainID, bytes32 resourceID, bytes calldata data) external payable whenNotPaused {
+    function deposit(uint8 destinationChainID, bytes32 resourceID, bytes calldata data) external payable whenNotPaused onlyInitialized {
         require(msg.value == _fee, "Incorrect fee supplied");
 
         address handler = _resourceIDToHandlerAddress[resourceID];

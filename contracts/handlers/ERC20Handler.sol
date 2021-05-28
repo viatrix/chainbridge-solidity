@@ -23,7 +23,7 @@ contract ERC20Handler is IDepositExecute, HandlerHelpers, ERC20Safe {
     // destId => depositNonce => Deposit Record
     mapping (uint8 => mapping(uint64 => DepositRecord)) public _depositRecords;
 
-    /**
+/**
         @param bridgeAddress Contract address of previously deployed Bridge.
         @param initialResourceIDs Resource IDs are used to identify a specific contract address.
         These are the Resource IDs this contract will initially support.
@@ -35,12 +35,14 @@ contract ERC20Handler is IDepositExecute, HandlerHelpers, ERC20Safe {
         @dev {initialResourceIDs} and {initialContractAddresses} must have the same length (one resourceID for every address).
         Also, these arrays must be ordered in the way that {initialResourceIDs}[0] is the intended resourceID for {initialContractAddresses}[0].
      */
-    constructor(
+    function init(
         address          bridgeAddress,
         bytes32[] memory initialResourceIDs,
         address[] memory initialContractAddresses,
         address[] memory burnableContractAddresses
     ) public {
+        require(msg.sender == owner, "Not owner");
+        require(!initialized, "Already initialized");
         require(initialResourceIDs.length == initialContractAddresses.length,
             "initialResourceIDs and initialContractAddresses len mismatch");
 
@@ -53,6 +55,7 @@ contract ERC20Handler is IDepositExecute, HandlerHelpers, ERC20Safe {
         for (uint256 i = 0; i < burnableContractAddresses.length; i++) {
             _setBurnable(burnableContractAddresses[i]);
         }
+        initialized = true;
     }
 
     /**

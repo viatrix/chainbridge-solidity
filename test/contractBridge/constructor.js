@@ -23,20 +23,24 @@ contract('Bridge - [constructor]', async accounts => {
     };
 
     beforeEach(async () => {
-        BridgeInstance = await BridgeContract.new(chainID, initialRelayers, initialRelayerThreshold, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(chainID, initialRelayers, initialRelayerThreshold, 0, 100);
         ADMIN_ROLE = await BridgeInstance.DEFAULT_ADMIN_ROLE()
     });
 
     it('Bridge should not allow to set initialRelayerThreshold above 255', async () => {
-        await TruffleAssert.fails(BridgeContract.new(chainID, initialRelayers, 256, 0, 100));
+        BridgeInstance = await BridgeContract.new();
+        await TruffleAssert.fails(BridgeInstance.init(chainID, initialRelayers, 256, 0, 100));
     });
 
     it('Bridge should not allow to set fee above 2**128 - 1', async () => {
-        await TruffleAssert.fails(BridgeContract.new(
+        BridgeInstance = await BridgeContract.new();
+        await TruffleAssert.fails(BridgeInstance.init(
             chainID, initialRelayers, initialRelayerThreshold, BN(2).pow(BN(128)), 100));
     });
 
     it('Bridge should not allow to set expiry above 2**40 - 1', async () => {
-        await TruffleAssert.fails(BridgeContract.new(chainID, initialRelayers, initialRelayerThreshold, 0, BN(2).pow(BN(40))));
+        BridgeInstance = await BridgeContract.new();
+        await TruffleAssert.fails(BridgeInstance.init(chainID, initialRelayers, initialRelayerThreshold, 0, BN(2).pow(BN(40))));
     });
 });

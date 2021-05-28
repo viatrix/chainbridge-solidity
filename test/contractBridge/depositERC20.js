@@ -31,14 +31,16 @@ contract('Bridge - [deposit - ERC20]', async (accounts) => {
 
     beforeEach(async () => {
         OriginERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
-        BridgeInstance = await BridgeContract.new(originChainID, [], relayerThreshold, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(originChainID, [], relayerThreshold, 0, 100);
         
         resourceID = Helpers.createResourceID(OriginERC20MintableInstance.address, originChainID);
         initialResourceIDs = [];
         initialContractAddresses = [];
         burnableContractAddresses = [];
 
-        OriginERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        OriginERC20HandlerInstance = await ERC20HandlerContract.new();
+        await OriginERC20HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
 
         await BridgeInstance.adminSetResource(OriginERC20HandlerInstance.address, resourceID, OriginERC20MintableInstance.address);
         await OriginERC20MintableInstance.mint(depositerAddress, originChainInitialTokenAmount);

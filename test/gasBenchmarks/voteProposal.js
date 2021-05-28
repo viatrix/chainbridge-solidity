@@ -33,7 +33,8 @@ contract('Gas Benchmark - [Vote Proposal]', async (accounts) => {
     const vote = (resourceID, depositNonce, depositDataHash, relayer) => BridgeInstance.voteProposal(chainID, depositNonce, resourceID, depositDataHash, { from: relayer });
 
     before(async () => {
-        BridgeInstance = await BridgeContract.new(chainID, initialRelayers, relayerThreshold, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(chainID, initialRelayers, relayerThreshold, 0, 100);
         ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
 
         erc20ResourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
@@ -42,7 +43,8 @@ contract('Gas Benchmark - [Vote Proposal]', async (accounts) => {
         const erc20InitialContractAddresses = [ERC20MintableInstance.address];
         const erc20BurnableContractAddresses = [];
 
-        ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, erc20InitialResourceIDs, erc20InitialContractAddresses, erc20BurnableContractAddresses);
+        ERC20HandlerInstance = await ERC20HandlerContract.new();
+        await ERC20HandlerInstance.init(BridgeInstance.address, erc20InitialResourceIDs, erc20InitialContractAddresses, erc20BurnableContractAddresses);
 
         await (ERC20HandlerInstance.address, erc20TokenAmount, { from: depositerAddress });
         await BridgeInstance.adminSetResource(ERC20HandlerInstance.address, erc20ResourceID, ERC20MintableInstance.address);

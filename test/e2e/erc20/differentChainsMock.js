@@ -47,8 +47,10 @@ contract('E2E ERC20 - Two EVM Chains', async accounts => {
     let destinationBurnableContractAddresses;
 
     beforeEach(async () => {
-        OriginBridgeInstance = await BridgeContract.new(originChainID, [originRelayer1Address, originRelayer2Address], originRelayerThreshold, 0, 100);
-        DestinationBridgeInstance = await BridgeContract.new(destinationChainID, [destinationRelayer1Address, destinationRelayer2Address], destinationRelayerThreshold, 0, 100);
+        OriginBridgeInstance = await BridgeContract.new();
+        await OriginBridgeInstance.init(originChainID, [originRelayer1Address, originRelayer2Address], originRelayerThreshold, 0, 100);
+        DestinationBridgeInstance = await BridgeContract.new();
+        await DestinationBridgeInstance.init(destinationChainID, [destinationRelayer1Address, destinationRelayer2Address], destinationRelayerThreshold, 0, 100);
         OriginERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
         DestinationERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
 
@@ -62,8 +64,10 @@ contract('E2E ERC20 - Two EVM Chains', async accounts => {
         destinationInitialContractAddresses = [DestinationERC20MintableInstance.address];
         destinationBurnableContractAddresses = [DestinationERC20MintableInstance.address];
 
-        OriginERC20HandlerInstance = await ERC20HandlerContract.new(OriginBridgeInstance.address, originInitialResourceIDs, originInitialContractAddresses, originBurnableContractAddresses);
-        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(DestinationBridgeInstance.address, destinationInitialResourceIDs, destinationInitialContractAddresses, destinationBurnableContractAddresses);
+        OriginERC20HandlerInstance = await ERC20HandlerContract.new();
+        await OriginERC20HandlerInstance.init(OriginBridgeInstance.address, originInitialResourceIDs, originInitialContractAddresses, originBurnableContractAddresses);
+        DestinationERC20HandlerInstance = await ERC20HandlerContract.new();
+        await DestinationERC20HandlerInstance.init(DestinationBridgeInstance.address, destinationInitialResourceIDs, destinationInitialContractAddresses, destinationBurnableContractAddresses);
 
         await OriginERC20MintableInstance.mint(depositerAddress, initialTokenAmount);
 

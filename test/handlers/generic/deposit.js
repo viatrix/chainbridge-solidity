@@ -40,7 +40,8 @@ contract('GenericHandler - [deposit]', async (accounts) => {
     let depositData
 
     beforeEach(async () => {
-        BridgeInstance = await BridgeContract.new(chainID, [], relayerThreshold, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(chainID, [], relayerThreshold, 0, 100);
         CentrifugeAssetInstance = await CentrifugeAssetContract.new();
         NoArgumentInstance = await NoArgumentContract.new();
         OneArgumentInstance = await OneArgumentContract.new();
@@ -89,7 +90,8 @@ contract('GenericHandler - [deposit]', async (accounts) => {
             Helpers.blankFunctionSig,
         ];
 
-        GenericHandlerInstance = await GenericHandlerContract.new(
+        GenericHandlerInstance = await GenericHandlerContract.new();
+        await GenericHandlerInstance.init(
             BridgeInstance.address,
             initialResourceIDs,
             initialContractAddresses,

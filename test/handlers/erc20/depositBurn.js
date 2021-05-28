@@ -33,7 +33,8 @@ contract('ERC20Handler - [Deposit Burn ERC20]', async (accounts) => {
     let burnableContractAddresses;
 
     beforeEach(async () => {
-        BridgeInstance = await BridgeContract.new(chainID, [], relayerThreshold, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(chainID, [], relayerThreshold, 0, 100);
         ERC20MintableInstance1 = await ERC20MintableContract.new("token", "TOK");
         ERC20MintableInstance2 = await ERC20MintableContract.new("token", "TOK");
 
@@ -43,7 +44,8 @@ contract('ERC20Handler - [Deposit Burn ERC20]', async (accounts) => {
         initialContractAddresses = [ERC20MintableInstance1.address, ERC20MintableInstance2.address];
         burnableContractAddresses = [ERC20MintableInstance1.address];
 
-        ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        ERC20HandlerInstance = await ERC20HandlerContract.new();
+        await ERC20HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
         await ERC20MintableInstance1.mint(depositerAddress, initialTokenAmount);
 
         await ERC20MintableInstance1.approve(ERC20HandlerInstance.address, depositAmount, { from: depositerAddress });

@@ -31,7 +31,8 @@ contract('Bridge - [fee]', async (accounts) => {
 
     beforeEach(async () => {
         CentrifugeAssetInstance = await CentrifugeAssetContract.new();
-        BridgeInstance = await BridgeContract.new(originChainID, [relayer], 0, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(originChainID, [relayer], 0, 0, 100);
 
         resourceID = Helpers.createResourceID(CentrifugeAssetInstance.address, originChainID)
         initialResourceIDs = [resourceID];
@@ -40,7 +41,8 @@ contract('Bridge - [fee]', async (accounts) => {
         initialDepositFunctionDepositerOffsets = [blankFunctionDepositerOffset];
         initialExecuteFunctionSignatures = [blankFunctionSig];
 
-        GenericHandlerInstance = await GenericHandlerContract.new(
+        GenericHandlerInstance = await GenericHandlerContract.new();
+        await GenericHandlerInstance.init(
             BridgeInstance.address,
             initialResourceIDs,
             initialContractAddresses,

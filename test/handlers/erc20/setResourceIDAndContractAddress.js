@@ -24,14 +24,16 @@ contract('ERC20Handler - [setResourceIDAndContractAddress]', async () => {
     let burnableContractAddresses;
 
     beforeEach(async () => {
-        BridgeInstance = await BridgeContract.new(chainID, [], relayerThreshold, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(chainID, [], relayerThreshold, 0, 100);
         ERC20MintableInstance1 = await ERC20MintableContract.new("token", "TOK");
 
         initialResourceIDs = [Ethers.utils.hexZeroPad((ERC20MintableInstance1.address + Ethers.utils.hexlify(chainID).substr(2)), 32)];
         initialContractAddresses = [ERC20MintableInstance1.address];
         burnableContractAddresses = [];
 
-        ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        ERC20HandlerInstance = await ERC20HandlerContract.new();
+        await ERC20HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
     });
 
     it("[sanity] ERC20MintableInstance1's resourceID and contract address should be set correctly", async () => {
@@ -73,7 +75,8 @@ contract('ERC20Handler - [setResourceIDAndContractAddress]', async () => {
 
         const ERC20MintableInstance2 = await ERC20MintableContract.new("token", "TOK");
         const secondERC20ResourceID = [Ethers.utils.hexZeroPad((ERC20MintableInstance2.address + Ethers.utils.hexlify(chainID).substr(2)), 32)];
-        ERC20HandlerInstance2 = await ERC20HandlerContract.new(BridgeInstance.address, secondERC20ResourceID, [ERC20MintableInstance2.address], burnableContractAddresses);
+        ERC20HandlerInstance2 = await ERC20HandlerContract.new();
+        await ERC20HandlerInstance2.init(BridgeInstance.address, secondERC20ResourceID, [ERC20MintableInstance2.address], burnableContractAddresses);
 
         await BridgeInstance.adminSetResource(ERC20HandlerInstance2.address, initialResourceIDs[0], ERC20MintableInstance2.address);
 

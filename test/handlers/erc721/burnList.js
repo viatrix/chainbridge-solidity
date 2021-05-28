@@ -26,7 +26,8 @@ contract('ERC721Handler - [Burn ERC721]', async () => {
     let burnableContractAddresses;
 
     beforeEach(async () => {
-        BridgeInstance = await BridgeContract.new(chainID, [], relayerThreshold, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(chainID, [], relayerThreshold, 0, 100);
         ERC721MintableInstance1 = await ERC721MintableContract.new("token", "TOK", "");
         ERC721MintableInstance2 = await ERC721MintableContract.new("token", "TOK", "");
 
@@ -38,11 +39,13 @@ contract('ERC721Handler - [Burn ERC721]', async () => {
     });
 
     it('[sanity] contract should be deployed successfully', async () => {
-        TruffleAssert.passes(await ERC721HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses));
+        const ERC721HandlerInstance = await ERC721HandlerContract.new();
+        TruffleAssert.passes(await ERC721HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses));
     });
 
     it('burnableContractAddresses should be marked true in _burnList', async () => {
-        const ERC721HandlerInstance = await ERC721HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        const ERC721HandlerInstance = await ERC721HandlerContract.new();
+        await ERC721HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
         for (const burnableAddress of burnableContractAddresses) {
             const isBurnable = await ERC721HandlerInstance._burnList.call(burnableAddress);
             assert.isTrue(isBurnable, "Contract wasn't successfully marked burnable");
@@ -50,13 +53,15 @@ contract('ERC721Handler - [Burn ERC721]', async () => {
     });
 
     it('ERC721MintableInstance2.address should not be marked true in _burnList', async () => {
-        const ERC721HandlerInstance = await ERC721HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        const ERC721HandlerInstance = await ERC721HandlerContract.new();
+        await ERC721HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
         const isBurnable = await ERC721HandlerInstance._burnList.call(ERC721MintableInstance2.address);
         assert.isFalse(isBurnable, "Contract shouldn't be marked burnable");
     });
 
     it('ERC721MintableInstance2.address should be marked true in _burnList after setBurnable is called', async () => {
-        const ERC721HandlerInstance = await ERC721HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        const ERC721HandlerInstance = await ERC721HandlerContract.new();
+        await ERC721HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
         await BridgeInstance.adminSetBurnable(ERC721HandlerInstance.address, ERC721MintableInstance2.address);
         const isBurnable = await ERC721HandlerInstance._burnList.call(ERC721MintableInstance2.address);
         assert.isTrue(isBurnable, "Contract wasn't successfully marked burnable");

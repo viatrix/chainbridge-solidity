@@ -35,7 +35,8 @@ contract('Bridge - [create a deposit proposal (voteProposal) with relayerThresho
 
     beforeEach(async () => {
         DestinationERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
-        BridgeInstance = await BridgeContract.new(originChainID, [originChainRelayerAddress], relayerThreshold, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(originChainID, [originChainRelayerAddress], relayerThreshold, 0, 100);
 
         initialResourceIDs = [];
         initialContractAddresses = [];
@@ -43,7 +44,8 @@ contract('Bridge - [create a deposit proposal (voteProposal) with relayerThresho
 
         resourceID = Helpers.createResourceID(DestinationERC20MintableInstance.address, destinationChainID);
 
-        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        DestinationERC20HandlerInstance = await ERC20HandlerContract.new();
+        await DestinationERC20HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
 
         await BridgeInstance.adminSetResource(DestinationERC20HandlerInstance.address, resourceID, DestinationERC20MintableInstance.address);
         
@@ -175,7 +177,8 @@ contract('Bridge - [create a deposit proposal (voteProposal) with relayerThresho
 
     beforeEach(async () => {
         DestinationERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
-        BridgeInstance = await BridgeContract.new(originChainID, [originChainRelayerAddress], relayerThreshold, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(originChainID, [originChainRelayerAddress], relayerThreshold, 0, 100);
         
         initialResourceIDs = [];
         initialContractAddresses = [];
@@ -183,7 +186,8 @@ contract('Bridge - [create a deposit proposal (voteProposal) with relayerThresho
 
         resourceID = Helpers.createResourceID(DestinationERC20MintableInstance.address, destinationChainID);
 
-        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        DestinationERC20HandlerInstance = await ERC20HandlerContract.new();
+        await DestinationERC20HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
 
         await BridgeInstance.adminSetResource(DestinationERC20HandlerInstance.address, resourceID, DestinationERC20MintableInstance.address);
         

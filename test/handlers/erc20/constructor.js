@@ -23,7 +23,8 @@ contract('ERC20Handler - [constructor]', async () => {
     let burnableContractAddresses;
 
     beforeEach(async () => {
-        BridgeInstance = await BridgeContract.new(chainID, [], relayerThreshold, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(chainID, [], relayerThreshold, 0, 100);
         ERC20MintableInstance1 = await ERC20MintableContract.new("token", "TOK");
         ERC20MintableInstance2 = await ERC20MintableContract.new("token", "TOK");
         ERC20MintableInstance3 = await ERC20MintableContract.new("token", "TOK");
@@ -39,11 +40,13 @@ contract('ERC20Handler - [constructor]', async () => {
     });
 
     it('[sanity] contract should be deployed successfully', async () => {
-        TruffleAssert.passes(await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses));
+        const ERC20HandlerInstance = await ERC20HandlerContract.new();
+        TruffleAssert.passes(await ERC20HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses));
     });
 
     it('initialResourceIDs should be parsed correctly and corresponding resourceID mappings should have expected values', async () => {
-        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        const ERC20HandlerInstance = await ERC20HandlerContract.new();
+        await ERC20HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
         
         for (const resourceID of initialResourceIDs) {
             const tokenAddress = `0x` + resourceID.substr(24,40);

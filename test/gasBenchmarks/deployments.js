@@ -26,11 +26,11 @@ contract('Gas Benchmark - [contract deployments]', async () => {
     let BridgeInstance;
 
     it('Should deploy all contracts and print benchmarks', async () => {
-        let contractInstances = [await BridgeContract.new(chainID, [], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance)];
-        contractInstances.push(await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses));
-        contractInstances.push(await ERC721HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses));
-        contractInstances.push(await GenericHandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, initialDepositFunctionSignatures, initialDepositFunctionDepositerOffsets, initialExecuteFunctionSignatures));
-        contractInstances.push(await CentrifugeAssetContract.new(centrifugeAssetMinCount));
+        let contractInstances = [await BridgeContract.new().then(instance => BridgeInstance = instance)];
+        contractInstances.push(await ERC20HandlerContract.new());
+        contractInstances.push(await ERC721HandlerContract.new());
+        contractInstances.push(await GenericHandlerContract.new());
+        contractInstances.push(await CentrifugeAssetContract.new());
         contractInstances.push(await HandlerHelpersContract.new());
         contractInstances.push(await ERC20SafeContract.new());
         contractInstances.push(await ERC721SafeContract.new());

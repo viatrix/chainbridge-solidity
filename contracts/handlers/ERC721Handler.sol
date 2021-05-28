@@ -43,12 +43,14 @@ contract ERC721Handler is IDepositExecute, HandlerHelpers, ERC721Safe {
         @dev {initialResourceIDs} and {initialContractAddresses} must have the same length (one resourceID for every address).
         Also, these arrays must be ordered in the way that {initialResourceIDs}[0] is the intended resourceID for {initialContractAddresses}[0].
      */
-    constructor(
+    function init(
         address bridgeAddress,
         bytes32[] memory initialResourceIDs,
         address[] memory initialContractAddresses,
         address[] memory burnableContractAddresses
     ) public {
+        require(msg.sender == owner, "Not owner");
+        require(!initialized, "Already initialized");
         require(initialResourceIDs.length == initialContractAddresses.length,
             "initialResourceIDs and initialContractAddresses len mismatch");
 
@@ -61,6 +63,7 @@ contract ERC721Handler is IDepositExecute, HandlerHelpers, ERC721Safe {
         for (uint256 i = 0; i < burnableContractAddresses.length; i++) {
             _setBurnable(burnableContractAddresses[i]);
         }
+        initialized = true;
     }
 
     /**

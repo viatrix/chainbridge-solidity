@@ -33,7 +33,8 @@ contract('E2E ERC721 - Same Chain', async accounts => {
     let depositProposalDataHash;
 
     beforeEach(async () => {
-        BridgeInstance = await BridgeContract.new(chainID, [relayer1Address, relayer2Address], relayerThreshold, 0, 100);
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(chainID, [relayer1Address, relayer2Address], relayerThreshold, 0, 100);
         ERC721MintableInstance = await ERC721MintableContract.new("token", "TOK", "");
         
         resourceID = Helpers.createResourceID(ERC721MintableInstance.address, chainID);
@@ -41,7 +42,8 @@ contract('E2E ERC721 - Same Chain', async accounts => {
         initialContractAddresses = [ERC721MintableInstance.address];
         burnableContractAddresses = [];
 
-        ERC721HandlerInstance = await ERC721HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        ERC721HandlerInstance = await ERC721HandlerContract.new();
+        await ERC721HandlerInstance.init(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
 
         await ERC721MintableInstance.mint(depositerAddress, tokenID, depositMetadata);
         await BridgeInstance.adminSetResource(ERC721HandlerInstance.address, resourceID, ERC721MintableInstance.address);

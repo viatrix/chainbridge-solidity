@@ -39,6 +39,10 @@ contract GenericHandler is IGenericHandler {
     // token contract address => is whitelisted
     mapping (address => bool) public _contractWhitelist;
 
+    address immutable public owner;
+
+    bool internal initialized;
+
     modifier onlyBridge() {
         _onlyBridge();
         _;
@@ -46,6 +50,10 @@ contract GenericHandler is IGenericHandler {
 
     function _onlyBridge() private view {
         require(msg.sender == _bridgeAddress, "sender must be bridge contract");
+    }
+
+    constructor() public {
+        owner = msg.sender;
     }
 
     /**
@@ -67,7 +75,7 @@ contract GenericHandler is IGenericHandler {
         must be intended for value x of any other array, e.g. {initialContractAddresses}[0]
         is the intended address for {initialDepositFunctionSignatures}[0].
      */
-    constructor(
+    function init(
         address          bridgeAddress,
         bytes32[] memory initialResourceIDs,
         address[] memory initialContractAddresses,
@@ -75,6 +83,8 @@ contract GenericHandler is IGenericHandler {
         uint256[] memory initialDepositFunctionDepositerOffsets,
         bytes4[]  memory initialExecuteFunctionSignatures
     ) public {
+        require(msg.sender == owner, "Not owner");  
+        require(!initialized, "Already initialized");
         require(initialResourceIDs.length == initialContractAddresses.length,
             "initialResourceIDs and initialContractAddresses len mismatch");
 
@@ -97,6 +107,7 @@ contract GenericHandler is IGenericHandler {
                 initialDepositFunctionDepositerOffsets[i],
                 initialExecuteFunctionSignatures[i]);
         }
+        initialized = true;
     }
 
     /**

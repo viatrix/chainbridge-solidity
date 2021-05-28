@@ -22,6 +22,10 @@ contract HandlerHelpers is IERCHandler {
     // token contract address => is burnable
     mapping (address => bool) public _burnList;
 
+    address immutable public owner;
+
+    bool internal initialized;
+
     modifier onlyBridge() {
         _onlyBridge();
         _;
@@ -72,5 +76,9 @@ contract HandlerHelpers is IERCHandler {
     function _setBurnable(address contractAddress) internal {
         require(_contractWhitelist[contractAddress], "provided contract is not whitelisted");
         _burnList[contractAddress] = true;
+    }
+
+    constructor() public {
+        owner = msg.sender;
     }
 }
