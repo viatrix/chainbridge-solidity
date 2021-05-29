@@ -127,7 +127,7 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
     it("relayer shouldn't be able to vote on a depositProposal more than once", async () => {
         await TruffleAssert.passes(vote(relayer1Address));
 
-        await TruffleAssert.reverts(vote(relayer1Address), 'relayer already voted');
+        await TruffleAssert.reverts(vote(relayer1Address));
     });
 
     it("Should be able to create a proposal with a different hash", async () => {
@@ -235,14 +235,14 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
         await vote(relayer2Address);
         await vote(relayer3Address);
         await executeProposal(relayer1Address);
-        await TruffleAssert.reverts(executeProposal(relayer1Address), "Proposal must have Passed status");
+        await TruffleAssert.reverts(executeProposal(relayer1Address));
     });
 
     it('Execution requires active proposal', async () => {
-        await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, '0x0', { from: relayer1Address }), "Proposal must have Passed status");
+        await TruffleAssert.reverts(BridgeInstance.executeProposal(originChainID, expectedDepositNonce, depositData, '0x0', { from: relayer1Address }));
     });
 
     it('Voting requires resourceID that is mapped to a handler', async () => {
-        await TruffleAssert.reverts(BridgeInstance.voteProposal(originChainID, expectedDepositNonce, '0x0', depositDataHash, { from: relayer1Address }), "no handler for resourceID");
+        await TruffleAssert.reverts(BridgeInstance.voteProposal(originChainID, expectedDepositNonce, '0x0', depositDataHash, { from: relayer1Address }));
     });
 });

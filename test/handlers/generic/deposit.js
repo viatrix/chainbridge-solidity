@@ -277,6 +277,6 @@ contract('GenericHandler - [deposit]', async (accounts) => {
             initialResourceIDs[5],
             Helpers.createGenericDepositData(encodedMetaData),
             { from: depositerAddress }
-        ), 'incorrect depositer in the data');
+        ));
     });
 });
