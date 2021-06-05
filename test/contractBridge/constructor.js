@@ -43,4 +43,17 @@ contract('Bridge - [constructor]', async accounts => {
         BridgeInstance = await BridgeContract.new();
         await TruffleAssert.fails(BridgeInstance.init(chainID, initialRelayers, initialRelayerThreshold, 0, BN(2).pow(BN(40))));
     });
+
+    it('Bridge should not allow admin functions if not initialized', async () => {
+        BridgeInstance = await BridgeContract.new();
+        await TruffleAssert.fails(BridgeInstance.adminPauseTransfers());
+        assert.isFalse(await BridgeInstance.paused());
+    });
+
+    it('Bridge should allow admin functions after init', async () => {
+        BridgeInstance = await BridgeContract.new();
+        await BridgeInstance.init(chainID, initialRelayers, initialRelayerThreshold, 0, 100);
+        await TruffleAssert.passes(BridgeInstance.adminPauseTransfers());
+        assert.isTrue(await BridgeInstance.paused());
+    });
 });

@@ -82,11 +82,6 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         _;
     }
 
-    modifier onlyInitialized() {
-        _onlyInitialized();
-        _;
-    }
-
     function _onlyAdminOrRelayer() private view {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(RELAYER_ROLE, msg.sender),
             "sender is not relayer or admin");
@@ -106,10 +101,6 @@ contract Bridge is Pausable, AccessControl, SafeMath {
 
     function _hasVoted(Proposal memory proposal, address relayer) private view returns(bool) {
         return (_relayerBit(relayer) & uint(proposal._yesVotes)) > 0;
-    }
-
-    function _onlyInitialized() private view {
-        require(initialized, "not initialized");
     }
 
     constructor () public {
@@ -330,7 +321,7 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         @param data Additional data to be passed to specified handler.
         @notice Emits {Deposit} event.
      */
-    function deposit(uint8 destinationChainID, bytes32 resourceID, bytes calldata data) external payable whenNotPaused onlyInitialized {
+    function deposit(uint8 destinationChainID, bytes32 resourceID, bytes calldata data) external payable whenNotPaused {
         require(msg.value == _fee, "Incorrect fee supplied");
 
         address handler = _resourceIDToHandlerAddress[resourceID];
