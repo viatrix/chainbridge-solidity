@@ -59,7 +59,7 @@ jobs:
           docker-compose build
           docker-compose up -d
           date
-      - name: Run OVM tests
+      - name: Run OVM tests 
         run: |
           npm install wait-on
           date
