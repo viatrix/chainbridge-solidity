@@ -51,6 +51,8 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: make install-deps
       - name: Checkout optimism
         run: git clone https://github.com/ethereum-optimism/optimism.git
       - name: Install optimism
