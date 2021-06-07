@@ -55,6 +55,7 @@ jobs:
         run: git clone https://github.com/ethereum-optimism/optimism.git
       - name: Install optimism
         run: |
+          git checkout e4a86984d082d7f1758687c2e1beaf9e064e6ea1
           cd optimism/ops
           docker-compose build
           docker-compose up -d
