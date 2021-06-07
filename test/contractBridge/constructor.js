@@ -30,18 +30,18 @@ contract('Bridge - [constructor]', async accounts => {
 
     it('Bridge should not allow to set initialRelayerThreshold above 255', async () => {
         BridgeInstance = await BridgeContract.new();
-        await TruffleAssert.fails(BridgeInstance.init(chainID, initialRelayers, 256, 0, 100));
+        await TruffleAssert.fails(BridgeInstance.init(chainID, initialRelayers, 256, 0, 100), "value does not fit in 8 bits");
     });
 
     it('Bridge should not allow to set fee above 2**128 - 1', async () => {
         BridgeInstance = await BridgeContract.new();
         await TruffleAssert.fails(BridgeInstance.init(
-            chainID, initialRelayers, initialRelayerThreshold, BN(2).pow(BN(128)), 100));
+            chainID, initialRelayers, initialRelayerThreshold, BN(2).pow(BN(128)), 100), "value does not fit in 128 bits");
     });
 
     it('Bridge should not allow to set expiry above 2**40 - 1', async () => {
         BridgeInstance = await BridgeContract.new();
-        await TruffleAssert.fails(BridgeInstance.init(chainID, initialRelayers, initialRelayerThreshold, 0, BN(2).pow(BN(40))));
+        await TruffleAssert.fails(BridgeInstance.init(chainID, initialRelayers, initialRelayerThreshold, 0, BN(2).pow(BN(40))), "value does not fit in 40 bits");
     });
 
     it('Bridge should not allow admin functions if not initialized', async () => {
