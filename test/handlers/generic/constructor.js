@@ -66,46 +66,50 @@ contract('GenericHandler - [constructor]', async () => {
 
     it('should revert because initialResourceIDs and initialContractAddresses len mismatch', async () => {
         const GenericHandlerInstance = await GenericHandlerContract.new();
-        await TruffleAssert.fails(GenericHandlerInstance.init(
+        await TruffleAssert.reverts(GenericHandlerInstance.init(
             BridgeInstance.address,
             [],
             initialContractAddresses,
             initialDepositFunctionSignatures,
             initialDepositFunctionDepositerOffsets,
-            initialExecuteFunctionSignatures));
+            initialExecuteFunctionSignatures),
+            "initialResourceIDs and initialContractAddresses len mismatch");
     });
 
     it('should revert because provided contract addresses and function signatures len mismatch', async () => {
         const GenericHandlerInstance = await GenericHandlerContract.new();
-        await TruffleAssert.fails(GenericHandlerInstance.init(
+        await TruffleAssert.reverts(GenericHandlerInstance.init(
             BridgeInstance.address,
             initialResourceIDs,
             initialContractAddresses,
             [],
             initialDepositFunctionDepositerOffsets,
-            initialExecuteFunctionSignatures));
+            initialExecuteFunctionSignatures),
+            "provided contract addresses and function signatures len mismatch");
     });
 
     it('should revert because provided contract addresses and function signatures len mismatch', async () => {
         const GenericHandlerInstance = await GenericHandlerContract.new();
-        await TruffleAssert.fails(GenericHandlerInstance.init(
+        await TruffleAssert.reverts(GenericHandlerInstance.init(
             BridgeInstance.address,
             initialResourceIDs,
             initialContractAddresses,
             initialDepositFunctionSignatures,
             [],
-            initialExecuteFunctionSignatures));
+            initialExecuteFunctionSignatures),
+            "provided depositer offsets and function signatures len mismatch");
     });
 
     it('should revert because provided deposit and execute function signatures len mismatch', async () => {
         const GenericHandlerInstance = await GenericHandlerContract.new();
-        await TruffleAssert.fails(GenericHandlerInstance.init(
+        await TruffleAssert.reverts(GenericHandlerInstance.init(
             BridgeInstance.address,
             initialResourceIDs,
             initialContractAddresses,
             initialDepositFunctionSignatures,
             initialDepositFunctionDepositerOffsets,
-            []));
+            []),
+            "provided deposit and execute function signatures len mismatch");
     });
 
     it('contract mappings were set with expected values', async () => {
