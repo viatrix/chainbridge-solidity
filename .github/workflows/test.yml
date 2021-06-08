@@ -58,7 +58,7 @@ jobs:
       - name: Install optimism
         run: |
           cd optimism
-          git checkout e4a86984d082d7f1758687c2e1beaf9e064e6ea1
+          git checkout a02392b070382112003c4fdd246cf3ad5ec261b5
           cd ops
           docker-compose build
           docker-compose up -d
