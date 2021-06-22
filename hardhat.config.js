@@ -15,7 +15,7 @@ module.exports = {
       // because account balances are not automatically initiated with an ETH
       // balance (yet, sorry!).
       gasPrice: 0,
-      gas: 9000000-1,
+      gas: 8900999,
       ovm: true // This sets the network as using the ovm and ensure contract will be compiled against that.
     }
   },
