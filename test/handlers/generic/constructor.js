@@ -66,7 +66,7 @@ contract('GenericHandler - [constructor]', async () => {
 
     it('should revert because initialResourceIDs and initialContractAddresses len mismatch', async () => {
         const GenericHandlerInstance = await GenericHandlerContract.new();
-        await TruffleAssert.fails(GenericHandlerInstance.init(
+        await TruffleAssert.reverts(GenericHandlerInstance.init(
             BridgeInstance.address,
             [],
             initialContractAddresses,
@@ -77,7 +77,7 @@ contract('GenericHandler - [constructor]', async () => {
 
     it('should revert because provided contract addresses and function signatures len mismatch', async () => {
         const GenericHandlerInstance = await GenericHandlerContract.new();
-        await TruffleAssert.fails(GenericHandlerInstance.init(
+        await TruffleAssert.reverts(GenericHandlerInstance.init(
             BridgeInstance.address,
             initialResourceIDs,
             initialContractAddresses,
@@ -88,7 +88,7 @@ contract('GenericHandler - [constructor]', async () => {
 
     it('should revert because provided contract addresses and function signatures len mismatch', async () => {
         const GenericHandlerInstance = await GenericHandlerContract.new();
-        await TruffleAssert.fails(GenericHandlerInstance.init(
+        await TruffleAssert.reverts(GenericHandlerInstance.init(
             BridgeInstance.address,
             initialResourceIDs,
             initialContractAddresses,
@@ -99,7 +99,7 @@ contract('GenericHandler - [constructor]', async () => {
 
     it('should revert because provided deposit and execute function signatures len mismatch', async () => {
         const GenericHandlerInstance = await GenericHandlerContract.new();
-        await TruffleAssert.fails(GenericHandlerInstance.init(
+        await TruffleAssert.reverts(GenericHandlerInstance.init(
             BridgeInstance.address,
             initialResourceIDs,
             initialContractAddresses,
