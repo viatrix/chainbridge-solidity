@@ -64,6 +64,11 @@ contract('Bridge - [fee]', async (accounts) => {
     });
 
     it('deposit reverts if invalid amount supplied', async () => {
+        if (await Helpers.isOVM()) {
+            console.log('Test skipped on Optimism testnet');
+            return;
+        }
+
         // current fee is set to 0
         assert.equal(await BridgeInstance._fee.call(), 0)
         
